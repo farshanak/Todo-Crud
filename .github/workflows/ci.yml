@@ -11,6 +11,54 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-pr-title:
+    if: github.event_name == 'pull_request'
+    name: validate-pr-title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title (conventional commits)
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            chore
+            refactor
+            test
+            deps
+            ci
+            style
+            perf
+          requireScope: false
+
+  validate-branch-name:
+    if: github.event_name == 'pull_request'
+    name: validate-branch-name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          PATTERN="^(feat|fix|docs|chore|refactor|test|deps|ci|style|perf)/.+"
+          if [[ "$BRANCH" == "main" || "$BRANCH" == "master" || "$BRANCH" == "develop" ]]; then
+            echo "Default branch — skipping validation"
+            exit 0
+          fi
+          # Allow Mault kit branches (step<N>/...)
+          if [[ "$BRANCH" =~ ^step[0-9]+/.+ ]]; then
+            echo "Mault step branch — allowed: $BRANCH"
+            exit 0
+          fi
+          if [[ ! "$BRANCH" =~ $PATTERN ]]; then
+            echo "::error::Invalid branch name: $BRANCH"
+            echo "Must match: feat|fix|docs|chore|refactor|test|deps|ci|style|perf/<description>"
+            exit 1
+          fi
+          echo "Branch name valid: $BRANCH"
+
   lint:
     name: lint
     runs-on: ubuntu-latest
