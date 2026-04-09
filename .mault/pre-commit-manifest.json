@@ -1,0 +1,20 @@
+{
+  "step": 6,
+  "stacks": ["python", "node"],
+  "configs": [".pre-commit-config.yaml"],
+  "hookType": "single",
+  "hooks": [
+    {"layer": 1, "id": "trailing-whitespace", "provider": "pre-commit/pre-commit-hooks"},
+    {"layer": 1, "id": "end-of-file-fixer", "provider": "pre-commit/pre-commit-hooks"},
+    {"layer": 1, "id": "check-yaml", "provider": "pre-commit/pre-commit-hooks"},
+    {"layer": 1, "id": "check-json", "provider": "pre-commit/pre-commit-hooks"},
+    {"layer": 1, "id": "check-merge-conflict", "provider": "pre-commit/pre-commit-hooks"},
+    {"layer": 1, "id": "check-added-large-files", "provider": "pre-commit/pre-commit-hooks"},
+    {"layer": 1, "id": "mixed-line-ending", "provider": "pre-commit/pre-commit-hooks"},
+    {"layer": 2, "id": "ruff", "provider": "astral-sh/ruff-pre-commit", "scope": "backend"},
+    {"layer": 3, "id": "detect-secrets", "provider": "Yelp/detect-secrets"},
+    {"layer": 4, "id": "branch-name-check", "provider": "local", "entry": "scripts/check-branch-name.sh"},
+    {"layer": 5, "id": "frontend-tsc", "provider": "local", "entry": "npx tsc --noEmit", "scope": "frontend"}
+  ],
+  "ciJobs": ["validate-pr-title", "validate-branch-name"]
+}
