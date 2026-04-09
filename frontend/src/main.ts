@@ -1,48 +1,15 @@
-interface Todo {
-  id: number;
-  title: string;
-  done: boolean;
-}
+import { createApi, type Todo } from "./api";
 
-const API = import.meta.env.VITE_API_URL;
-if (!API) {
+const API_URL = import.meta.env.VITE_API_URL;
+if (!API_URL) {
   throw new Error("VITE_API_URL is not set. Copy .env.example to .env at the repo root.");
 }
+
+const api = createApi(API_URL);
 
 const listEl = document.getElementById("todo-list") as HTMLUListElement;
 const formEl = document.getElementById("new-todo-form") as HTMLFormElement;
 const inputEl = document.getElementById("new-todo-input") as HTMLInputElement;
-
-async function fetchTodos(): Promise<Todo[]> {
-  const res = await fetch(`${API}/todos`);
-  if (!res.ok) throw new Error("Failed to fetch todos");
-  return res.json();
-}
-
-async function createTodo(title: string): Promise<Todo> {
-  const res = await fetch(`${API}/todos`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, done: false }),
-  });
-  if (!res.ok) throw new Error("Failed to create todo");
-  return res.json();
-}
-
-async function updateTodo(todo: Todo): Promise<Todo> {
-  const res = await fetch(`${API}/todos/${todo.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: todo.title, done: todo.done }),
-  });
-  if (!res.ok) throw new Error("Failed to update todo");
-  return res.json();
-}
-
-async function deleteTodo(id: number): Promise<void> {
-  const res = await fetch(`${API}/todos/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete todo");
-}
 
 function render(todos: Todo[]): void {
   listEl.innerHTML = "";
@@ -54,7 +21,7 @@ function render(todos: Todo[]): void {
     checkbox.type = "checkbox";
     checkbox.checked = todo.done;
     checkbox.addEventListener("change", async () => {
-      await updateTodo({ ...todo, done: checkbox.checked });
+      await api.updateTodo({ ...todo, done: checkbox.checked });
       await refresh();
     });
 
@@ -64,7 +31,7 @@ function render(todos: Todo[]): void {
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "Delete";
     removeBtn.addEventListener("click", async () => {
-      await deleteTodo(todo.id);
+      await api.deleteTodo(todo.id);
       await refresh();
     });
 
@@ -74,7 +41,7 @@ function render(todos: Todo[]): void {
 }
 
 async function refresh(): Promise<void> {
-  const todos = await fetchTodos();
+  const todos = await api.fetchTodos();
   render(todos);
 }
 
@@ -82,7 +49,7 @@ formEl.addEventListener("submit", async (e) => {
   e.preventDefault();
   const title = inputEl.value.trim();
   if (!title) return;
-  await createTodo(title);
+  await api.createTodo(title);
   inputEl.value = "";
   await refresh();
 });
