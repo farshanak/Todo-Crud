@@ -1,5 +1,7 @@
 # Todo CRUD
 
+![CI](https://github.com/farshanak/Todo-Crud/actions/workflows/ci.yml/badge.svg)
+
 Small Todo app: Python FastAPI backend + TypeScript/Vite frontend.
 
 ## Backend
