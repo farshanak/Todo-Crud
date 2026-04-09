@@ -159,10 +159,16 @@ check_9() {
 }
 
 # --- CHECK 10: Handshake commit with [mault-step6] marker ---
+# NOTE: cannot use `git log ... | grep -q` under pipefail — grep -q exits
+# early and SIGPIPEs git log, flipping the pipe to failure. Use grep -c
+# against a variable instead.
 check_10() {
-  if git log --all --format='%s' 2>/dev/null | grep -q '\[mault-step6\]'; then
+  local log_output match_count
+  log_output=$(git log --all --format='%h %s' 2>/dev/null || true)
+  match_count=$(printf '%s\n' "$log_output" | grep -c '\[mault-step6\]' || true)
+  if [ "${match_count:-0}" -ge 1 ]; then
     local commit
-    commit=$(git log --all --format='%h %s' | grep '\[mault-step6\]' | head -1)
+    commit=$(printf '%s\n' "$log_output" | grep '\[mault-step6\]' | head -1)
     print_pass 10 "Handshake commit found: ${commit}"
   else
     print_fail 10 "No commit with [mault-step6] marker found."
