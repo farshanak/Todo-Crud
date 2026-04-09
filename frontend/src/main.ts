@@ -4,7 +4,10 @@ interface Todo {
   done: boolean;
 }
 
-const API = "http://localhost:8000";
+const API = import.meta.env.VITE_API_URL;
+if (!API) {
+  throw new Error("VITE_API_URL is not set. Copy .env.example to .env at the repo root.");
+}
 
 const listEl = document.getElementById("todo-list") as HTMLUListElement;
 const formEl = document.getElementById("new-todo-form") as HTMLFormElement;
