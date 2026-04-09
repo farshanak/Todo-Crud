@@ -1,23 +1,13 @@
-from itertools import count
+"""
+Integration tests for the Todos HTTP API.
 
-import pytest
+These tests exercise the real FastAPI app via TestClient. They validate
+wiring end-to-end: route registration, Pydantic (de)serialization, status
+codes, and in-memory store behavior.
+
+The `client` and `reset_store` fixtures come from backend/tests/conftest.py.
+"""
 from fastapi.testclient import TestClient
-
-import main
-
-
-@pytest.fixture(autouse=True)
-def reset_state() -> None:
-    """Ensure each test starts with an empty store and fresh ID sequence."""
-    main._todos.clear()
-    main._ids = count(1)
-    yield
-    main._todos.clear()
-
-
-@pytest.fixture
-def client() -> TestClient:
-    return TestClient(main.app)
 
 
 def test_list_empty(client: TestClient) -> None:
