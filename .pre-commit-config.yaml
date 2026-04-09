@@ -1,0 +1,90 @@
+# Pre-commit hooks for Todo-Crud (Mault Step 6)
+#
+# Install:
+#   pre-commit install
+#
+# Run against all files:
+#   pre-commit run --all-files
+
+# Global excludes — generated / vendored / Mault scaffolding
+exclude: |
+  (?x)^(
+      \.mault/.*|
+      \.claude/.*|
+      frontend/node_modules/.*|
+      frontend/dist/.*|
+      frontend/package-lock\.json|
+      backend/\.venv.*/.*|
+      .*\.min\.(js|css)
+  )$
+
+repos:
+  # =========================================================================
+  # LAYER 1: File Hygiene
+  # =========================================================================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # =========================================================================
+  # LAYER 2: Python linting (backend) — ruff
+  # Matches the CI config in backend/pyproject.toml
+  # =========================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        name: ruff (backend)
+        args: [--fix, --config=backend/pyproject.toml]
+        files: ^backend/.*\.py$
+
+  # =========================================================================
+  # LAYER 3: Secret detection
+  # =========================================================================
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: |
+          (?x)^(
+              \.env\.example|
+              .*\.lock|
+              .*\.snap
+          )$
+
+  # =========================================================================
+  # LAYER 4: Branch naming convention
+  # =========================================================================
+  - repo: local
+    hooks:
+      - id: branch-name-check
+        name: Branch naming convention
+        entry: bash scripts/check-branch-name.sh
+        language: system
+        always_run: true
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =========================================================================
+  # LAYER 5: Frontend type check (only runs when frontend/*.ts files staged)
+  # =========================================================================
+  - repo: local
+    hooks:
+      - id: frontend-tsc
+        name: Frontend TypeScript type check
+        entry: bash -c 'cd frontend && npx tsc --noEmit'
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+        stages: [pre-commit]

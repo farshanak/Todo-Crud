@@ -26,6 +26,10 @@ exclude_lines = [
 line-length = 100
 target-version = "py311"
 exclude = ["tests"]
+src = ["."]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "main"]
