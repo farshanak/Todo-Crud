@@ -88,3 +88,50 @@ repos:
         files: ^frontend/.*\.(ts|tsx)$
         pass_filenames: false
         stages: [pre-commit]
+
+  # =========================================================================
+  # LAYERS 6-11: Governance gates (Step 8)
+  # =========================================================================
+  - repo: local
+    hooks:
+      - id: gov-silent-catches
+        name: "Gov: Silent catch ratchet"
+        entry: python3 scripts/governance/check_silent_catches.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: gov-type-holes
+        name: "Gov: Type hole ratchet"
+        entry: python3 scripts/governance/check_type_holes.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: gov-lint-suppressions
+        name: "Gov: Lint suppression ratchet"
+        entry: python3 scripts/governance/check_lint_suppressions.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: gov-mock-tax
+        name: "Gov: Mock tax (2x rule)"
+        entry: python3 scripts/governance/check_mock_tax.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: gov-srp-guardrails
+        name: "Gov: SRP guardrails"
+        entry: python3 scripts/governance/guardrails_check.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: gov-skipped-tests
+        name: "Gov: Skipped test gate"
+        entry: python3 scripts/governance/check_skipped_tests.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
