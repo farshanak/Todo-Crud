@@ -1,0 +1,6 @@
+{
+  "max_file_loc": 600,
+  "warn_file_loc": 300,
+  "max_func_loc": 50,
+  "amnesty_files": []
+}

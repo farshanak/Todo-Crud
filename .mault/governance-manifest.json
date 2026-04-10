@@ -1,0 +1,26 @@
+{
+  "step": 8,
+  "deployedAt": "2026-04-09",
+  "stacks": ["python", "node"],
+  "gates": [
+    {"id": "silent-catches", "philosophy": "Iron Dome", "script": "scripts/governance/check_silent_catches.py", "baseline": ".memory-layer/baselines/silent-catches.json", "scope": ["backend", "frontend"]},
+    {"id": "type-holes", "philosophy": "Iron Dome", "script": "scripts/governance/check_type_holes.py", "baseline": ".memory-layer/baselines/type-holes.json", "scope": ["backend", "frontend"]},
+    {"id": "lint-suppressions", "philosophy": "Escape Hatch", "script": "scripts/governance/check_lint_suppressions.py", "baseline": ".memory-layer/baselines/lint-suppressions.json", "scope": ["backend", "frontend"]},
+    {"id": "mock-tax", "philosophy": "Rising Tide", "script": "scripts/governance/check_mock_tax.py", "baseline": null, "scope": ["backend", "frontend"]},
+    {"id": "srp-guardrails", "philosophy": "SRP", "script": "scripts/governance/guardrails_check.py", "baseline": ".memory-layer/baselines/guardrails.json", "scope": ["backend", "frontend"]},
+    {"id": "skipped-tests", "philosophy": "Test Discipline", "script": "scripts/governance/check_skipped_tests.py", "baseline": null, "scope": ["backend", "frontend"]},
+    {"id": "coverage-fortress", "philosophy": "Coverage Fortress", "script": "scripts/governance/check_per_file_baseline.py", "baseline": ".memory-layer/baselines/coverage.json", "scope": ["backend"], "ciOnly": true}
+  ],
+  "ciJobs": ["governance"],
+  "preCommitLayers": ["gov-silent-catches", "gov-type-holes", "gov-lint-suppressions", "gov-mock-tax", "gov-srp-guardrails", "gov-skipped-tests"],
+  "skipped": {
+    "mutation-testing": "100-LOC codebase — setup cost exceeds signal",
+    "buddy-system": "No commands/detectors paradigm in Todo CRUD app",
+    "behavioral-pairing": "No perception-critical files",
+    "hallucinated-packages": "Pinned deps in requirements.txt + package-lock.json",
+    "duplicate-code": "Not enough code to plausibly duplicate",
+    "ci-sharding": "Test suite runs in <30s",
+    "circular-deps": "Trivially impossible at this size",
+    "metrics": "Governance tax tracking is for scale, not demos"
+  }
+}

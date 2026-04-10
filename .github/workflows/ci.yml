@@ -146,7 +146,30 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Pytest integration (backend)
         working-directory: backend
-        # Integration tests validate wiring end-to-end. The `test` job already
-        # enforces the 80% coverage floor — this job runs --cov for reporting
-        # only, without a fail-under threshold.
         run: pytest tests/integration/ -v --cov --cov-report=term
+
+  governance:
+    name: governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Governance gates (ratchets + guardrails)
+        run: |
+          python scripts/governance/check_silent_catches.py
+          python scripts/governance/check_type_holes.py
+          python scripts/governance/check_lint_suppressions.py
+          python scripts/governance/check_mock_tax.py
+          python scripts/governance/guardrails_check.py
+          python scripts/governance/check_skipped_tests.py
+
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        continue-on-error: true

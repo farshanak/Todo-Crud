@@ -1,0 +1,13 @@
+# Gitleaks configuration — scans PR diffs for leaked secrets.
+# Used by the CI governance job.
+
+title = "Todo-Crud Gitleaks Config"
+
+[allowlist]
+  paths = [
+    '''\.env\.example''',
+    '''\.secrets\.baseline''',
+    '''package-lock\.json''',
+    '''\.mault/''',
+    '''\.claude/''',
+  ]
