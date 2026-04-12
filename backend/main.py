@@ -1,10 +1,14 @@
+from datetime import datetime
 from itertools import count
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from config import settings
+
+Priority = Literal["low", "medium", "high", "urgent"]
 
 app = FastAPI(title="Todo API")
 
@@ -19,6 +23,8 @@ app.add_middleware(
 class TodoIn(BaseModel):
     title: str
     done: bool = False
+    due_at: datetime | None = None
+    priority: Priority = "medium"
 
 
 class Todo(TodoIn):
